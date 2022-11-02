@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: local-test
+spec:
+  serviceAccount: longhorn-backup-secret-manager
+  restartPolicy: Never
+  containers:
+  - name: local-test
+    image: minikube/local-test
+    imagePullPolicy: Never
+    env:
+      - name: SECRET_FILE
+        value: /secret.yaml
+      - name: SECRET_NAME
+        value: mostest_secret
