@@ -46,7 +46,7 @@ jobs:
       run: ./build-docker.sh
 
     - name: Push the docker image
-      run: docker push ameypar/backuper
+      run: docker push ameypar/k8s-secret-creator
 
     - name: Start minikube
       id: minikube
