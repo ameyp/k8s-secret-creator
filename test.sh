@@ -8,7 +8,7 @@ kubectl apply -f test/rbac.yaml -n secret-namespace
 kubectl apply -f test/pod.yaml -n secret-namespace
 
 i=0
-while [ $i -lt 30 ] # Attempt a max of 30 times
+while [ $i -lt 10 ] # Attempt a max of 10 times
 do
     secret_exists=$(kubectl get secret mostest_secret -n secret-namespace)
     if [[ $? == 0 ]]; then
@@ -21,4 +21,5 @@ done
 
 echo "Secret was not created. The following secrets exist: "
 kubectl get secret -n secret-namespace
+kubectl logs local-test -n secret-namespace
 exit 1
