@@ -7,8 +7,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: local-test
-    image: minikube/local-test
-    imagePullPolicy: Never
+    image: ameypar/k8s-secret-creator
     env:
       - name: SECRET_FILE
         value: /secret.yaml

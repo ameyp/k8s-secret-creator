@@ -1,0 +1,44 @@
+** Purpose
+
+This repository creates a binary and a docker image, both of which can be used for creating an Opaque secret in the same namespace that the binary runs in.
+
+** Prerequisites
+
+The =ServiceAccount= used for running the pod with this binary must have authorization to create, list and delete secrets. This can be accomplished as follows, where =secret-test= is the name of the =ServiceAccount=:
+
+#+BEGIN_SRC yaml
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: secret-test
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: secret-test
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: secret-test
+roleRef:
+  kind: Role
+  name: secret-test
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: secret-test
+#+END_SRC
+
+** Usage
+
+Both of the following environment variables must be set:
+
+- =SECRET_NAME=: The name of the secret to be created.
+- =SECRET_FILE=: The name of the file that contains the secret's contents in YAML format.
+
+  The =SECRET_FILE= is treated as a simple key-value YAML file with no nesting, so if your YAML is more complicated, the binary might fail and fall over.

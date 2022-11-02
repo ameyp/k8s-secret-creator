@@ -1,8 +1,5 @@
 #!/bin/bash
 
-eval $(minikube -p minikube docker-env)
-docker build -t minikube/local-test .
-
 kubectl create namespace secret-namespace
 kubectl apply -f test/rbac.yaml -n secret-namespace
 kubectl apply -f test/pod.yaml -n secret-namespace
