@@ -10,7 +10,7 @@ kubectl apply -f test/pod.yaml -n secret-namespace
 i=0
 while [ $i -lt 10 ] # Attempt a max of 10 times
 do
-    secret_exists=$(kubectl get secret mostest_secret -n secret-namespace)
+    secret_exists=$(kubectl get secret mostest-secret -n secret-namespace)
     if [[ $? == 0 ]]; then
         exit 0
     fi

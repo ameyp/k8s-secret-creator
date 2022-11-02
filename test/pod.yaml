@@ -13,4 +13,4 @@ spec:
       - name: SECRET_FILE
         value: /secret.yaml
       - name: SECRET_NAME
-        value: mostest_secret
+        value: mostest-secret
