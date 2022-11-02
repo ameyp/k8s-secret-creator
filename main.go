@@ -97,7 +97,7 @@ func createSecret(secretName string, namespace string, secretsManager clientv1.S
 
 func main() {
 	namespace := getNamespace()
-	secretName := "longhorn-backup-secret"
+	secretName := requireEnv("SECRET_NAME")
 
 	log.Printf("Managing secret [%s] in namespace [%s]", secretName, namespace)
 

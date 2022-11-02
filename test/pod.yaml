@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: local-test
 spec:
-  serviceAccount: longhorn-backup-secret-manager
+  serviceAccount: secret-test
   restartPolicy: Never
   containers:
   - name: local-test
