@@ -56,7 +56,7 @@ func getSecretContent() map[string][]byte {
 	return secretContent
 }
 
-func getSecretsManager(namespace string) clientv1.SecretInterface {
+func GetSecretsManager(namespace string) clientv1.SecretInterface {
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -72,8 +72,7 @@ func getSecretsManager(namespace string) clientv1.SecretInterface {
 	return clientset.CoreV1().Secrets(string(namespace))
 }
 
-func createSecret(secretName string, namespace string, secretsManager clientv1.SecretInterface) {
-	secretContent := getSecretContent()
+func CreateSecret(secretName string, secretContent map[string][]byte, namespace string, secretsManager clientv1.SecretInterface) {
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: secretName,
@@ -101,7 +100,7 @@ func main() {
 
 	log.Printf("Managing secret [%s] in namespace [%s]", secretName, namespace)
 
-	secretsManager := getSecretsManager(namespace)
+	secretsManager := GetSecretsManager(namespace)
 
 	// Check if the secret already exists. If it does, delete it.
 	secrets, err := secretsManager.List(context.TODO(), metav1.ListOptions{})
@@ -119,5 +118,6 @@ func main() {
 		}
 	}
 
-	createSecret(secretName, namespace, secretsManager)
+	secretContent := getSecretContent()
+	CreateSecret(secretName, secretContent, namespace, secretsManager)
 }
