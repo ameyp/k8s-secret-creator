@@ -7,11 +7,8 @@ import (
 	"os"
 
 	"gopkg.in/yaml.v3"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	clientv1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/rest"
+	secrets "github.com/ameyp/k8s-secret-creator/secrets"
 )
 
 func requireEnv(variable string) []byte {
@@ -56,59 +53,21 @@ func getSecretContent() map[string][]byte {
 	return secretContent
 }
 
-func GetSecretsManager(namespace string) clientv1.SecretInterface {
-	// creates the in-cluster config
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		log.Fatalf("Could not create k8s client config: %s", err.Error())
-	}
-
-	// creates the clientset
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		log.Fatalf("Could not create k8s clientset: %s", err.Error())
-	}
-
-	return clientset.CoreV1().Secrets(string(namespace))
-}
-
-func CreateSecret(secretName string, secretContent map[string][]byte, namespace string, secretsManager clientv1.SecretInterface) {
-	secret := &corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: secretName,
-			Namespace: namespace,
-			Labels: map[string] string {
-				"owner": "k8s-secret-creator",
-			},
-		},
-		Type: "Opaque",
-		Data: secretContent,
-	}
-
-	_, err := secretsManager.Create(context.TODO(), secret, metav1.CreateOptions{})
-
-	if err != nil {
-		log.Fatalf("Could not create secret: %s", err.Error())
-	}
-
-	log.Print("Created the secret")
-}
-
 func main() {
 	namespace := getNamespace()
 	secretName := string(requireEnv("SECRET_NAME"))
 
 	log.Printf("Managing secret [%s] in namespace [%s]", secretName, namespace)
 
-	secretsManager := GetSecretsManager(namespace)
+	secretsManager := secrets.GetSecretsManager(namespace)
 
 	// Check if the secret already exists. If it does, delete it.
-	secrets, err := secretsManager.List(context.TODO(), metav1.ListOptions{})
+	secretList, err := secretsManager.List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Fatalf("Could not list secrets: %s", err.Error())
 	}
 
-	for _, s := range secrets.Items {
+	for _, s := range secretList.Items {
 		if s.Name == secretName {
 			err := secretsManager.Delete(context.TODO(), secretName, metav1.DeleteOptions{})
 			if err != nil {
@@ -119,5 +78,5 @@ func main() {
 	}
 
 	secretContent := getSecretContent()
-	CreateSecret(secretName, secretContent, namespace, secretsManager)
+	secrets.CreateSecret(secretName, secretContent, namespace, secretsManager)
 }

@@ -1,5 +1,4 @@
 module github.com/ameyp/k8s-secret-creator
-replace k8s-secret-creator => github.com/ameyp/k8s-secret-creator
 
 go 1.18
 
