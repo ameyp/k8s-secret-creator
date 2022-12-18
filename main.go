@@ -59,7 +59,11 @@ func main() {
 
 	log.Printf("Managing secret [%s] in namespace [%s]", secretName, namespace)
 
-	secretsManager := secrets.GetSecretsManager(namespace)
+	secretsManager, err := secrets.GetSecretsManager(namespace)
+
+	if err != nil {
+		log.Fatalf("Could not get secrets manager: %s", err.Error())
+	}
 
 	// Check if the secret already exists. If it does, delete it.
 	secretList, err := secretsManager.List(context.TODO(), metav1.ListOptions{})
@@ -78,5 +82,10 @@ func main() {
 	}
 
 	secretContent := getSecretContent()
-	secrets.CreateSecret(secretName, secretContent, namespace, secretsManager)
+	err = secrets.CreateSecret(secretName, secretContent, namespace, secretsManager)
+	if err != nil {
+		log.Fatalf("Could not create the secret: %s", err.Error())
+	}
+
+	log.Print("Created the secret")
 }
