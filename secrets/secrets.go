@@ -27,7 +27,8 @@ func GetSecretsManager(namespace string) clientv1.SecretInterface {
 	return clientset.CoreV1().Secrets(string(namespace))
 }
 
-func CreateSecret(secretName string, secretContent map[string][]byte, namespace string, secretsManager clientv1.SecretInterface) {
+// The values for secretContent must be base64-encoded.
+func CreateSecret(secretName string, secretContent map[string]string, namespace string, secretsManager clientv1.SecretInterface) {
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: secretName,
@@ -37,7 +38,7 @@ func CreateSecret(secretName string, secretContent map[string][]byte, namespace 
 			},
 		},
 		Type: "Opaque",
-		Data: secretContent,
+		StringData: secretContent,
 	}
 
 	_, err := secretsManager.Create(context.TODO(), secret, metav1.CreateOptions{})

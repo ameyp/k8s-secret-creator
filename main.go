@@ -29,7 +29,7 @@ func getNamespace() string {
 	return string(namespace)
 }
 
-func getSecretContent() map[string][]byte {
+func getSecretContent() map[string]string {
 	secretFile := requireEnv("SECRET_FILE")
 
 	content, err := ioutil.ReadFile(string(secretFile))
@@ -44,10 +44,10 @@ func getSecretContent() map[string][]byte {
 		log.Fatalf("Could not parse yaml into a map of string -> string, error: %v", err)
 	}
 
-	secretContent := make(map[string][]byte)
+	secretContent := make(map[string]string)
 
 	for key, val := range m {
-		secretContent[key] = []byte(val)
+		secretContent[key] = val
 	}
 
 	return secretContent
